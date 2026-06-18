@@ -1,0 +1,315 @@
+<div class="page">
+  <h1>Bureau d'Ordre Digital</h1>
+
+  <section class="section">
+    <h2>Ajouter un courrier</h2>
+
+    @if (messageSucces) {
+      <p class="success">{{ messageSucces }}</p>
+    }
+
+    @if (erreurCreation) {
+      <p class="error">{{ erreurCreation }}</p>
+    }
+
+    <form class="form" (ngSubmit)="ajouterCourrier()">
+      <div class="form-row">
+        <label>Objet *</label>
+        <input type="text" name="objet" [(ngModel)]="nouveauCourrier.objet">
+      </div>
+
+      <div class="form-row">
+        <label>Expéditeur *</label>
+        <input type="text" name="expediteur" [(ngModel)]="nouveauCourrier.expediteur">
+      </div>
+
+      <div class="form-row">
+        <label>Destination</label>
+        <input type="text" name="destination" [(ngModel)]="nouveauCourrier.destination">
+      </div>
+
+      <div class="form-row">
+        <label>Type *</label>
+        <select name="type" [(ngModel)]="nouveauCourrier.type">
+          <option value="ENTRANT">ENTRANT</option>
+          <option value="SORTANT">SORTANT</option>
+          <option value="INTERNE">INTERNE</option>
+          <option value="EMAIL_ADMINISTRATIF">EMAIL_ADMINISTRATIF</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Priorité *</label>
+        <select name="priorite" [(ngModel)]="nouveauCourrier.priorite">
+          <option value="BASSE">BASSE</option>
+          <option value="NORMALE">NORMALE</option>
+          <option value="HAUTE">HAUTE</option>
+          <option value="URGENTE">URGENTE</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Date réception *</label>
+        <input type="date" name="dateReception" [(ngModel)]="nouveauCourrier.dateReception">
+      </div>
+
+      <div class="form-row">
+        <label>Date limite *</label>
+        <input type="date" name="dateLimite" [(ngModel)]="nouveauCourrier.dateLimite">
+      </div>
+
+      <div class="form-row">
+        <label>Département *</label>
+        <select name="departementId" [(ngModel)]="nouveauCourrier.departementId">
+          <option [ngValue]="0">-- Choisir un département --</option>
+          @for (departement of departements; track departement.id) {
+            <option [ngValue]="departement.id">
+              {{ departement.nom }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Créateur / Agent *</label>
+        <select name="createurId" [(ngModel)]="nouveauCourrier.createurId">
+          <option [ngValue]="0">-- Choisir un agent --</option>
+          @for (utilisateur of utilisateurs; track utilisateur.id) {
+            @if (utilisateur.role === 'AGENT') {
+              <option [ngValue]="utilisateur.id">
+                {{ utilisateur.prenom }} {{ utilisateur.nom }}
+              </option>
+            }
+          }
+        </select>
+      </div>
+
+      <div class="form-row full">
+        <label>Description *</label>
+        <textarea name="description" rows="4" [(ngModel)]="nouveauCourrier.description"></textarea>
+      </div>
+
+      <button type="submit">Créer le courrier</button>
+    </form>
+  </section>
+
+  <section class="section">
+    <h2>Liste des départements</h2>
+
+    @if (loadingDepartements) {
+      <p>Chargement des départements...</p>
+    }
+
+    @if (erreurDepartements) {
+      <p class="error">{{ erreurDepartements }}</p>
+    }
+
+    @if (!loadingDepartements && departements.length === 0) {
+      <p>Aucun département trouvé.</p>
+    }
+
+    @if (!loadingDepartements && departements.length > 0) {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Date création</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (departement of departements; track departement.id) {
+            <tr>
+              <td>{{ departement.id }}</td>
+              <td>{{ departement.nom }}</td>
+              <td>{{ departement.code }}</td>
+              <td>{{ departement.description }}</td>
+              <td>{{ departement.createdAt }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+
+  <section class="section">
+    <h2>Liste des utilisateurs</h2>
+
+    @if (loadingUtilisateurs) {
+      <p>Chargement des utilisateurs...</p>
+    }
+
+    @if (erreurUtilisateurs) {
+      <p class="error">{{ erreurUtilisateurs }}</p>
+    }
+
+    @if (!loadingUtilisateurs && utilisateurs.length === 0) {
+      <p>Aucun utilisateur trouvé.</p>
+    }
+
+    @if (!loadingUtilisateurs && utilisateurs.length > 0) {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom complet</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Département</th>
+            <th>Première connexion</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (utilisateur of utilisateurs; track utilisateur.id) {
+            <tr>
+              <td>{{ utilisateur.id }}</td>
+              <td>{{ utilisateur.prenom }} {{ utilisateur.nom }}</td>
+              <td>{{ utilisateur.email }}</td>
+              <td>{{ utilisateur.telephone }}</td>
+              <td>{{ utilisateur.role }}</td>
+              <td>{{ utilisateur.statut }}</td>
+              <td>{{ utilisateur.departement?.nom || '-' }}</td>
+              <td>{{ utilisateur.premiereConnexion ? 'Oui' : 'Non' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+
+  <section class="section">
+    <h2>Liste des courriers</h2>
+
+    @if (loadingCourriers) {
+      <p>Chargement des courriers...</p>
+    }
+
+    @if (erreurCourriers) {
+      <p class="error">{{ erreurCourriers }}</p>
+    }
+
+    @if (!loadingCourriers && courriers.length === 0) {
+      <p>Aucun courrier trouvé.</p>
+    }
+
+    @if (!loadingCourriers && courriers.length > 0) {
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>N° ordre</th>
+            <th>Objet</th>
+            <th>Expéditeur</th>
+            <th>Destination</th>
+            <th>Type</th>
+            <th>Statut</th>
+            <th>Priorité</th>
+            <th>Date réception</th>
+            <th>Date limite</th>
+            <th>Département</th>
+            <th>Créé par</th>
+            <th>Archivé</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (courrier of courriers; track courrier.id) {
+            <tr>
+              <td>{{ courrier.id }}</td>
+              <td>{{ courrier.numeroOrdre }}</td>
+              <td>{{ courrier.objet }}</td>
+              <td>{{ courrier.expediteur }}</td>
+              <td>{{ courrier.destination || '-' }}</td>
+              <td>{{ courrier.type }}</td>
+              <td>{{ courrier.statut }}</td>
+              <td>{{ courrier.priorite }}</td>
+              <td>{{ courrier.dateReception }}</td>
+              <td>{{ courrier.dateLimite }}</td>
+              <td>{{ courrier.departementNom || '-' }}</td>
+              <td>{{ courrier.createurNomComplet || '-' }}</td>
+              <td>{{ courrier.archive ? 'Oui' : 'Non' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+  <section class="section">
+  <h2>Affecter un courrier à un responsable</h2>
+
+  @if (messageAffectation) {
+    <p class="success">{{ messageAffectation }}</p>
+  }
+
+  @if (erreurAffectation) {
+    <p class="error">{{ erreurAffectation }}</p>
+  }
+
+  <form class="form" (ngSubmit)="affecterCourrier()">
+    <div class="form-row">
+      <label>Courrier *</label>
+      <select name="courrierId" [(ngModel)]="nouvelleAffectation.courrierId">
+        <option [ngValue]="0">-- Choisir un courrier --</option>
+        @for (courrier of courriers; track courrier.id) {
+          <option [ngValue]="courrier.id">
+            {{ courrier.numeroOrdre }} - {{ courrier.objet }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Affecté par / Agent *</label>
+      <select name="affecteParId" [(ngModel)]="nouvelleAffectation.affecteParId">
+        <option [ngValue]="0">-- Choisir un agent --</option>
+        @for (utilisateur of utilisateurs; track utilisateur.id) {
+          @if (utilisateur.role === 'AGENT') {
+            <option [ngValue]="utilisateur.id">
+              {{ utilisateur.prenom }} {{ utilisateur.nom }}
+            </option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Responsable destinataire *</label>
+      <select name="affecteAUtilisateurId" [(ngModel)]="nouvelleAffectation.affecteAUtilisateurId">
+        <option [ngValue]="0">-- Choisir un responsable --</option>
+        @for (utilisateur of utilisateurs; track utilisateur.id) {
+          @if (utilisateur.role === 'RESPONSABLE') {
+            <option [ngValue]="utilisateur.id">
+              {{ utilisateur.prenom }} {{ utilisateur.nom }}
+            </option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Département destinataire *</label>
+      <select name="affecteADepartementId" [(ngModel)]="nouvelleAffectation.affecteADepartementId">
+        <option [ngValue]="0">-- Choisir un département --</option>
+        @for (departement of departements; track departement.id) {
+          <option [ngValue]="departement.id">
+            {{ departement.nom }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="form-row full">
+      <label>Commentaire</label>
+      <textarea name="commentaireAffectation" rows="3" [(ngModel)]="nouvelleAffectation.commentaire"></textarea>
+    </div>
+
+    <button type="submit">Affecter</button>
+  </form>
+</section>
+</div>

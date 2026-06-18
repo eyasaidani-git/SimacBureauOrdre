@@ -1,0 +1,34 @@
+# Spring Boot / Java
+**/target/
+*.class
+*.jar
+*.war
+
+# IntelliJ
+.idea/
+**/.idea/
+*.iml
+*.iws
+*.ipr
+
+# Angular / Node
+**/node_modules/
+**/dist/
+**/.angular/
+**/.cache/
+
+# VS Code
+.vscode/
+**/.vscode/
+
+# Logs
+*.log
+
+# Secrets
+.env
+application-local.properties
+**/application-local.properties
+
+# OS
+.DS_Store
+Thumbs.db

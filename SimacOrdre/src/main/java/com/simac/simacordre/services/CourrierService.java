@@ -10,7 +10,6 @@ import com.simac.simacordre.enums.PrioriteEnum;
 import com.simac.simacordre.enums.StatutCourrierEnum;
 import com.simac.simacordre.repositories.CourrierRepository;
 import com.simac.simacordre.repositories.DepartementRepository;
-import com.simac.simacordre.repositories.NumeroOrdreSeqRepository;
 import com.simac.simacordre.repositories.UtilisateurRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,20 +22,20 @@ import java.util.List;
 public class CourrierService {
 
     private final CourrierRepository courrierRepository;
-    private final NumeroOrdreSeqRepository numeroOrdreSeqRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final DepartementRepository departementRepository;
+    private final NumeroOrdreService numeroOrdreService;
 
     public CourrierService(
             CourrierRepository courrierRepository,
-            NumeroOrdreSeqRepository numeroOrdreSeqRepository,
             UtilisateurRepository utilisateurRepository,
-            DepartementRepository departementRepository
+            DepartementRepository departementRepository,
+            NumeroOrdreService numeroOrdreService
     ) {
         this.courrierRepository = courrierRepository;
-        this.numeroOrdreSeqRepository = numeroOrdreSeqRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.departementRepository = departementRepository;
+        this.numeroOrdreService = numeroOrdreService;
     }
 
     public List<CourrierResponse> getAllCourriers() {
@@ -65,15 +64,11 @@ public class CourrierService {
                 ? request.getDateReception()
                 : LocalDate.now();
 
-        NumeroOrdreSeq sequence = getOrCreateSequence(dateReception);
+        NumeroOrdreService.ResultatNumeroOrdre resultatNumeroOrdre =
+                numeroOrdreService.genererNumeroOrdre(dateReception);
 
-        Integer prochainNumero = sequence.getDernierNumero() + 1;
-        sequence.setDernierNumero(prochainNumero);
-        sequence.setUpdatedAt(LocalDateTime.now());
-
-        numeroOrdreSeqRepository.save(sequence);
-
-        String numeroOrdre = sequence.getPrefixe() + "/" + String.format("%04d", prochainNumero);
+        String numeroOrdre = resultatNumeroOrdre.getNumeroOrdre();
+        NumeroOrdreSeq sequence = resultatNumeroOrdre.getNumeroOrdreSeq();
 
         Courrier courrier = new Courrier();
         courrier.setNumeroOrdre(numeroOrdre);
@@ -95,22 +90,6 @@ public class CourrierService {
         Courrier saved = courrierRepository.save(courrier);
 
         return toResponse(saved);
-    }
-
-    private NumeroOrdreSeq getOrCreateSequence(LocalDate dateReception) {
-        Integer annee = dateReception.getYear();
-        Integer mois = dateReception.getMonthValue();
-
-        return numeroOrdreSeqRepository.findByAnneeAndMois(annee, mois)
-                .orElseGet(() -> {
-                    NumeroOrdreSeq sequence = new NumeroOrdreSeq();
-                    sequence.setAnnee(annee);
-                    sequence.setMois(mois);
-                    sequence.setDernierNumero(0);
-                    sequence.setPrefixe(String.format("%04d/%02d", annee, mois));
-                    sequence.setUpdatedAt(LocalDateTime.now());
-                    return numeroOrdreSeqRepository.save(sequence);
-                });
     }
 
     private CourrierResponse toResponse(Courrier courrier) {

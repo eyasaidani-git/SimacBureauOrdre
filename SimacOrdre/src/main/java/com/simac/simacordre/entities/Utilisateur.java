@@ -1,11 +1,17 @@
 package com.simac.simacordre.entities;
+
 import com.simac.simacordre.enums.RoleEnum;
 import com.simac.simacordre.enums.StatutUtilisateurEnum;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "utilisateur")
 public class Utilisateur {
+
     @Id
     private Long id;
 
@@ -25,10 +31,12 @@ public class Utilisateur {
     private String telephone;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "role_enum")
     private RoleEnum role;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "statut_utilisateur_enum")
     private StatutUtilisateurEnum statut;
 
@@ -51,6 +59,7 @@ public class Utilisateur {
 
     public Utilisateur() {
     }
+
     public Long getId() {
         return id;
     }
@@ -143,7 +152,7 @@ public class Utilisateur {
         this.departement = departement;
     }
 
-    public void setResponsable(Utilisateur responsable){
+    public void setResponsable(Utilisateur responsable) {
         this.responsable = responsable;
     }
 

@@ -19,7 +19,7 @@ public class StatutCourrierController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR')")
-    @PutMapping("/courriers/{courrierId}/statut")
+    @PutMapping("/{courrierId}/statut")
     public UpdateStatutCourrierResponse updateStatutCourrier(
             @PathVariable Long courrierId,
             @RequestBody UpdateStatutCourrierRequest request

@@ -9,7 +9,7 @@ import com.simac.simacordre.services.ReclamationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -23,42 +23,49 @@ public class ReclamationController {
         this.reclamationService = reclamationService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE', 'DIRECTEUR')")
     @GetMapping
     @Operation(summary = "Lister toutes les réclamations")
     public List<ReclamationResponse> getAllReclamations() {
         return reclamationService.getAllReclamations();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @GetMapping("/{id}")
     @Operation(summary = "Consulter une réclamation par ID")
     public ReclamationResponse getReclamationById(@PathVariable Long id) {
         return reclamationService.getReclamationById(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @GetMapping("/createur/{createurId}")
     @Operation(summary = "Lister les réclamations créées par un utilisateur")
     public List<ReclamationResponse> getReclamationsByCreateur(@PathVariable Long createurId) {
         return reclamationService.getReclamationsByCreateur(createurId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @GetMapping("/categorie/{categorie}")
     @Operation(summary = "Lister les réclamations par catégorie")
     public List<ReclamationResponse> getReclamationsByCategorie(@PathVariable CategorieReclamationEnum categorie) {
         return reclamationService.getReclamationsByCategorie(categorie);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @GetMapping("/statut/{statut}")
     @Operation(summary = "Lister les réclamations par statut")
     public List<ReclamationResponse> getReclamationsByStatut(@PathVariable StatutReclamationEnum statut) {
         return reclamationService.getReclamationsByStatut(statut);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @PostMapping
     @Operation(summary = "Créer une réclamation")
     public ReclamationResponse creerReclamation(@RequestBody CreateReclamationRequest request) {
         return reclamationService.creerReclamation(request);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @PutMapping("/{id}/traiter")
     @Operation(summary = "Traiter une réclamation")
     public ReclamationResponse traiterReclamation(

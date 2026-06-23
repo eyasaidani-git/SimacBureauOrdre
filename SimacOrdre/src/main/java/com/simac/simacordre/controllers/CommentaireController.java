@@ -6,7 +6,7 @@ import com.simac.simacordre.services.CommentaireService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -20,18 +20,21 @@ public class CommentaireController {
         this.commentaireService = commentaireService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR')")
     @GetMapping
     @Operation(summary = "Lister tous les commentaires")
     public List<CommentaireResponse> getAllCommentaires() {
         return commentaireService.getAllCommentaires();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @GetMapping("/courrier/{courrierId}")
     @Operation(summary = "Lister les commentaires d'un courrier")
     public List<CommentaireResponse> getCommentairesByCourrier(@PathVariable Long courrierId) {
         return commentaireService.getCommentairesByCourrier(courrierId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @PostMapping
     @Operation(summary = "Ajouter un commentaire")
     public CommentaireResponse creerCommentaire(@RequestBody CreateCommentaireRequest request) {

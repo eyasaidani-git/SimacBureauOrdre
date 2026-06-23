@@ -7,7 +7,7 @@ import com.simac.simacordre.services.EmailSpamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -21,54 +21,63 @@ public class EmailSpamController {
         this.emailSpamService = emailSpamService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @GetMapping
     @Operation(summary = "Lister tous les emails spam")
     public List<EmailSpamResponse> getAllEmailsSpam() {
         return emailSpamService.getAllEmailsSpam();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @GetMapping("/{id}")
     @Operation(summary = "Consulter un email spam par ID")
     public EmailSpamResponse getEmailSpamById(@PathVariable Long id) {
         return emailSpamService.getEmailSpamById(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @GetMapping("/confirmes")
     @Operation(summary = "Lister les emails confirmés comme spam")
     public List<EmailSpamResponse> getEmailsConfirmesSpam() {
         return emailSpamService.getEmailsConfirmesSpam();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @GetMapping("/non-spam")
     @Operation(summary = "Lister les emails marqués comme non spam")
     public List<EmailSpamResponse> getEmailsNonSpam() {
         return emailSpamService.getEmailsNonSpam();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RESPONSABLE')")
     @GetMapping("/responsable-concerne/{responsableConcerneId}")
     @Operation(summary = "Lister les emails spam par responsable concerné")
     public List<EmailSpamResponse> getEmailsSpamByResponsableConcerne(@PathVariable Long responsableConcerneId) {
         return emailSpamService.getEmailsSpamByResponsableConcerne(responsableConcerneId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @GetMapping("/traite-par/{traiteParId}")
     @Operation(summary = "Lister les emails spam traités par un utilisateur")
     public List<EmailSpamResponse> getEmailsSpamByTraitePar(@PathVariable Long traiteParId) {
         return emailSpamService.getEmailsSpamByTraitePar(traiteParId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @GetMapping("/count/semaine")
     @Operation(summary = "Compter les spams confirmés cette semaine")
     public long countSpamsConfirmesCetteSemaine() {
         return emailSpamService.countSpamsConfirmesCetteSemaine();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @PostMapping
     @Operation(summary = "Créer un email spam")
     public EmailSpamResponse creerEmailSpam(@RequestBody CreateEmailSpamRequest request) {
         return emailSpamService.creerEmailSpam(request);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @PutMapping("/{id}/confirmer")
     @Operation(summary = "Confirmer qu'un email est un spam")
     public EmailSpamResponse confirmerCommeSpam(
@@ -78,6 +87,7 @@ public class EmailSpamController {
         return emailSpamService.confirmerCommeSpam(id, request);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @PutMapping("/{id}/non-spam")
     @Operation(summary = "Marquer un email comme non spam")
     public EmailSpamResponse marquerCommeNonSpam(

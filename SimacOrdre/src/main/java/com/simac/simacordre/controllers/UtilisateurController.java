@@ -5,7 +5,7 @@ import com.simac.simacordre.services.UtilisateurService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -19,15 +19,18 @@ public class UtilisateurController {
         this.utilisateurService = utilisateurService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR')")
     @GetMapping
     @Operation(summary = "Lister tous les utilisateurs sans afficher les mots de passe")
     public List<UtilisateurResponse> getAllUtilisateurs() {
         return utilisateurService.getAllUtilisateurs();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR')")
     @GetMapping("/{id}")
     @Operation(summary = "Consulter un utilisateur par ID sans afficher le mot de passe")
     public UtilisateurResponse getUtilisateurById(@PathVariable Long id) {
         return utilisateurService.getUtilisateurById(id);
     }
+
 }

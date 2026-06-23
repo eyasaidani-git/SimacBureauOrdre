@@ -3,7 +3,7 @@ package com.simac.simacordre.controllers;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +16,7 @@ public class DatabaseTestController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/test-db")
     public Map<String, Object> testDatabase() {
         Integer nombreDepartements = jdbcTemplate.queryForObject(

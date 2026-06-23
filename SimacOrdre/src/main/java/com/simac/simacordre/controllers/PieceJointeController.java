@@ -6,7 +6,7 @@ import com.simac.simacordre.services.PieceJointeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -20,18 +20,21 @@ public class PieceJointeController {
         this.pieceJointeService = pieceJointeService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR')")
     @GetMapping
     @Operation(summary = "Lister toutes les pièces jointes")
     public List<PieceJointeResponse> getAllPiecesJointes() {
         return pieceJointeService.getAllPiecesJointes();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE', 'DIRECTEUR', 'EMPLOYE')")
     @GetMapping("/courrier/{courrierId}")
     @Operation(summary = "Lister les pièces jointes d'un courrier")
     public List<PieceJointeResponse> getPiecesJointesByCourrier(@PathVariable Long courrierId) {
         return pieceJointeService.getPiecesJointesByCourrier(courrierId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
     @PostMapping
     @Operation(summary = "Ajouter une pièce jointe")
     public PieceJointeResponse ajouterPieceJointe(@RequestBody CreatePieceJointeRequest request) {

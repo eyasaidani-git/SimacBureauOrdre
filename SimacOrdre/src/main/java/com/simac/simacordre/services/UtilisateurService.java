@@ -58,6 +58,7 @@ public class UtilisateurService {
                 utilisateur.getRole(),
                 utilisateur.getStatut(),
                 utilisateur.getPremiereConnexion(),
+                utilisateur.getEmailVerifie(),
                 departementId,
                 departementNom,
                 responsableId,

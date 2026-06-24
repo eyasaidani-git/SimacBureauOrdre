@@ -43,6 +43,15 @@ public class Utilisateur {
     @Column(name = "premiere_connexion", nullable = false)
     private Boolean premiereConnexion;
 
+    @Column(name = "email_verifie", nullable = false)
+    private Boolean emailVerifie = false;
+
+    @Column(name = "code_verification_email", length = 10)
+    private String codeVerificationEmail;
+
+    @Column(name = "code_verification_expire_at")
+    private LocalDateTime codeVerificationExpireAt;
+
     @ManyToOne
     @JoinColumn(name = "departement_id")
     private Departement departement;
@@ -96,6 +105,18 @@ public class Utilisateur {
         return premiereConnexion;
     }
 
+    public Boolean getEmailVerifie() {
+        return emailVerifie;
+    }
+
+    public String getCodeVerificationEmail() {
+        return codeVerificationEmail;
+    }
+
+    public LocalDateTime getCodeVerificationExpireAt() {
+        return codeVerificationExpireAt;
+    }
+
     public Departement getDepartement() {
         return departement;
     }
@@ -146,6 +167,18 @@ public class Utilisateur {
 
     public void setPremiereConnexion(Boolean premiereConnexion) {
         this.premiereConnexion = premiereConnexion;
+    }
+
+    public void setEmailVerifie(Boolean emailVerifie) {
+        this.emailVerifie = emailVerifie;
+    }
+
+    public void setCodeVerificationEmail(String codeVerificationEmail) {
+        this.codeVerificationEmail = codeVerificationEmail;
+    }
+
+    public void setCodeVerificationExpireAt(LocalDateTime codeVerificationExpireAt) {
+        this.codeVerificationExpireAt = codeVerificationExpireAt;
     }
 
     public void setDepartement(Departement departement) {

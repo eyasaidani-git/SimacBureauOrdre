@@ -15,6 +15,7 @@ public class UtilisateurResponse {
     private RoleEnum role;
     private StatutUtilisateurEnum statut;
     private Boolean premiereConnexion;
+    private Boolean emailVerifie;
     private Long departementId;
     private String departementNom;
     private Long responsableId;
@@ -31,6 +32,7 @@ public class UtilisateurResponse {
             RoleEnum role,
             StatutUtilisateurEnum statut,
             Boolean premiereConnexion,
+            Boolean emailVerifie,
             Long departementId,
             String departementNom,
             Long responsableId,
@@ -46,6 +48,7 @@ public class UtilisateurResponse {
         this.role = role;
         this.statut = statut;
         this.premiereConnexion = premiereConnexion;
+        this.emailVerifie = emailVerifie;
         this.departementId = departementId;
         this.departementNom = departementNom;
         this.responsableId = responsableId;
@@ -84,6 +87,10 @@ public class UtilisateurResponse {
 
     public Boolean getPremiereConnexion() {
         return premiereConnexion;
+    }
+
+    public Boolean getEmailVerifie() {
+        return emailVerifie;
     }
 
     public Long getDepartementId() {

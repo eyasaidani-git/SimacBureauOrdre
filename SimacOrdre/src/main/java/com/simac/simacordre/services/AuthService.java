@@ -1,9 +1,12 @@
 package com.simac.simacordre.services;
 
 import com.simac.simacordre.dto.request.ChangePasswordFirstLoginRequest;
+import com.simac.simacordre.dto.request.ForgotPasswordRequest;
 import com.simac.simacordre.dto.request.LoginRequest;
 import com.simac.simacordre.dto.request.ResendEmailVerificationCodeRequest;
+import com.simac.simacordre.dto.request.ResetPasswordRequest;
 import com.simac.simacordre.dto.request.VerifyEmailRequest;
+import com.simac.simacordre.dto.request.VerifyResetPasswordCodeRequest;
 import com.simac.simacordre.dto.response.LoginResponse;
 import com.simac.simacordre.dto.response.UtilisateurResponse;
 import com.simac.simacordre.entities.Utilisateur;
@@ -199,6 +202,110 @@ public class AuthService {
         utilisateurRepository.save(utilisateur);
 
         return "Mot de passe changé avec succès. Vous pouvez maintenant vous connecter normalement.";
+    }
+
+    @Transactional
+    public String demanderReinitialisationMotDePasse(ForgotPasswordRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new RuntimeException("L'email est obligatoire.");
+        }
+
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec cet email."));
+
+        if (utilisateur.getStatut() != StatutUtilisateurEnum.ACTIF) {
+            throw new RuntimeException("Votre compte n'est pas actif.");
+        }
+
+        String code = genererCodeSixChiffres();
+
+        utilisateur.setCodeResetPassword(code);
+        utilisateur.setCodeResetPasswordExpireAt(LocalDateTime.now().plusMinutes(10));
+
+        utilisateurRepository.save(utilisateur);
+
+        String nomComplet = utilisateur.getPrenom() + " " + utilisateur.getNom();
+
+        emailService.envoyerCodeResetPassword(
+                utilisateur.getEmail(),
+                nomComplet,
+                code
+        );
+
+        return "Code de réinitialisation envoyé par email.";
+    }
+
+    @Transactional
+    public String verifierCodeResetPassword(VerifyResetPasswordCodeRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new RuntimeException("L'email est obligatoire.");
+        }
+
+        if (request.getCode() == null || request.getCode().isBlank()) {
+            throw new RuntimeException("Le code est obligatoire.");
+        }
+
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec cet email."));
+
+        verifierCodeResetPasswordValide(utilisateur, request.getCode());
+
+        return "Code de réinitialisation valide.";
+    }
+
+    @Transactional
+    public String reinitialiserMotDePasse(ResetPasswordRequest request) {
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new RuntimeException("L'email est obligatoire.");
+        }
+
+        if (request.getCode() == null || request.getCode().isBlank()) {
+            throw new RuntimeException("Le code est obligatoire.");
+        }
+
+        if (request.getNouveauMotDePasse() == null || request.getNouveauMotDePasse().isBlank()) {
+            throw new RuntimeException("Le nouveau mot de passe est obligatoire.");
+        }
+
+        if (request.getConfirmationMotDePasse() == null || request.getConfirmationMotDePasse().isBlank()) {
+            throw new RuntimeException("La confirmation du mot de passe est obligatoire.");
+        }
+
+        if (!request.getNouveauMotDePasse().equals(request.getConfirmationMotDePasse())) {
+            throw new RuntimeException("La confirmation du mot de passe ne correspond pas.");
+        }
+
+        if (request.getNouveauMotDePasse().length() < 8) {
+            throw new RuntimeException("Le nouveau mot de passe doit contenir au moins 8 caractères.");
+        }
+
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec cet email."));
+
+        verifierCodeResetPasswordValide(utilisateur, request.getCode());
+
+        utilisateur.setMotDePasse(passwordEncoder.encode(request.getNouveauMotDePasse()));
+        utilisateur.setCodeResetPassword(null);
+        utilisateur.setCodeResetPasswordExpireAt(null);
+
+        utilisateurRepository.save(utilisateur);
+
+        return "Mot de passe réinitialisé avec succès.";
+    }
+
+    private void verifierCodeResetPasswordValide(Utilisateur utilisateur, String code) {
+        if (utilisateur.getCodeResetPassword() == null ||
+                utilisateur.getCodeResetPasswordExpireAt() == null) {
+            throw new RuntimeException("Aucun code de réinitialisation n'a été généré.");
+        }
+
+        if (utilisateur.getCodeResetPasswordExpireAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Le code de réinitialisation a expiré.");
+        }
+
+        if (!utilisateur.getCodeResetPassword().equals(code)) {
+            throw new RuntimeException("Code de réinitialisation incorrect.");
+        }
     }
 
     private String genererCodeSixChiffres() {

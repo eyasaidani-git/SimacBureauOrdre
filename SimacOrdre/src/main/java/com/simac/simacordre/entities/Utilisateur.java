@@ -52,6 +52,12 @@ public class Utilisateur {
     @Column(name = "code_verification_expire_at")
     private LocalDateTime codeVerificationExpireAt;
 
+    @Column(name = "code_reset_password", length = 10)
+    private String codeResetPassword;
+
+    @Column(name = "code_reset_password_expire_at")
+    private LocalDateTime codeResetPasswordExpireAt;
+
     @ManyToOne
     @JoinColumn(name = "departement_id")
     private Departement departement;
@@ -195,5 +201,21 @@ public class Utilisateur {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCodeResetPassword() {
+        return codeResetPassword;
+    }
+
+    public LocalDateTime getCodeResetPasswordExpireAt() {
+        return codeResetPasswordExpireAt;
+    }
+
+    public void setCodeResetPassword(String codeResetPassword) {
+        this.codeResetPassword = codeResetPassword;
+    }
+
+    public void setCodeResetPasswordExpireAt(LocalDateTime codeResetPasswordExpireAt) {
+        this.codeResetPasswordExpireAt = codeResetPasswordExpireAt;
     }
 }

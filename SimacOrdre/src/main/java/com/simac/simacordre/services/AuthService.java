@@ -27,6 +27,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final RecaptchaService recaptchaService;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -34,12 +35,14 @@ public class AuthService {
             UtilisateurRepository utilisateurRepository,
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
-            EmailService emailService
+            EmailService emailService,
+            RecaptchaService recaptchaService
     ) {
         this.utilisateurRepository = utilisateurRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.recaptchaService = recaptchaService;
     }
 
     @Transactional
@@ -51,6 +54,8 @@ public class AuthService {
         if (request.getMotDePasse() == null || request.getMotDePasse().isBlank()) {
             throw new RuntimeException("Le mot de passe est obligatoire.");
         }
+
+        recaptchaService.verifierToken(request.getRecaptchaToken(), "login");
 
         Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email ou mot de passe incorrect."));
@@ -209,6 +214,8 @@ public class AuthService {
         if (request.getEmail() == null || request.getEmail().isBlank()) {
             throw new RuntimeException("L'email est obligatoire.");
         }
+
+        recaptchaService.verifierToken(request.getRecaptchaToken(), "forgot_password");
 
         Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec cet email."));

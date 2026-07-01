@@ -14,6 +14,8 @@ public class PieceJointeResponse {
     private TypeFichierEnum typeFichier;
     private String cheminFichier;
     private Long taille;
+    private String referenceDocument;
+    private String observation;
     private TypeDocumentPieceJointeEnum typeDocument;
     private LocalDateTime uploadedAt;
 
@@ -26,7 +28,9 @@ public class PieceJointeResponse {
             String cheminFichier,
             Long taille,
             TypeDocumentPieceJointeEnum typeDocument,
-            LocalDateTime uploadedAt
+            LocalDateTime uploadedAt,
+            String referenceDocument,
+            String observation
     ) {
         this.id = id;
         this.courrierId = courrierId;
@@ -37,6 +41,8 @@ public class PieceJointeResponse {
         this.taille = taille;
         this.typeDocument = typeDocument;
         this.uploadedAt = uploadedAt;
+        this.referenceDocument = referenceDocument;
+        this.observation = observation;
     }
 
     public Long getId() {
@@ -74,4 +80,8 @@ public class PieceJointeResponse {
     public LocalDateTime getUploadedAt() {
         return uploadedAt;
     }
+
+    public String getReferenceDocument() {return referenceDocument;}
+
+    public String getObservation() {return observation;}
 }

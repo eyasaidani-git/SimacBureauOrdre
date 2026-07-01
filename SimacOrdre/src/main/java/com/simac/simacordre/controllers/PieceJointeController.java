@@ -34,7 +34,7 @@ public class PieceJointeController {
         return pieceJointeService.getPiecesJointesByCourrier(courrierId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT', 'RESPONSABLE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AGENT')")
     @PostMapping
     @Operation(summary = "Ajouter une pièce jointe")
     public PieceJointeResponse ajouterPieceJointe(@RequestBody CreatePieceJointeRequest request) {

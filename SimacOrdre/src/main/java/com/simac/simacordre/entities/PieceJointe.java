@@ -37,6 +37,12 @@ public class PieceJointe {
     @Column(name = "uploaded_at", nullable = false)
     private LocalDateTime uploadedAt = LocalDateTime.now();
 
+    @Column(name = "reference_document", length = 100)
+    private String referenceDocument;
+
+    @Column(columnDefinition = "TEXT")
+    private String observation;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type_document", nullable = false, columnDefinition = "type_document_piece_jointe_enum")
@@ -77,6 +83,10 @@ public class PieceJointe {
         return typeDocument;
     }
 
+    public String getReferenceDocument() {return referenceDocument;}
+
+    public String getObservation() {return observation;}
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -108,4 +118,8 @@ public class PieceJointe {
     public void setTypeDocument(TypeDocumentPieceJointeEnum typeDocument) {
         this.typeDocument = typeDocument;
     }
+
+    public void setReferenceDocument(String referenceDocument) {this.referenceDocument = referenceDocument;}
+
+    public void setObservation(String observation) {this.observation = observation;}
 }

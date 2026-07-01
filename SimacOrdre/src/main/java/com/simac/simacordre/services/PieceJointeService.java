@@ -75,6 +75,8 @@ public class PieceJointeService {
         pieceJointe.setTypeDocument(
                 request.getTypeDocument() != null ? request.getTypeDocument() : TypeDocumentPieceJointeEnum.AUTRE
         );
+        pieceJointe.setReferenceDocument(request.getReferenceDocument());
+        pieceJointe.setObservation(request.getObservation());
         pieceJointe.setUploadedAt(LocalDateTime.now());
 
         return toResponse(pieceJointeRepository.save(pieceJointe));
@@ -90,7 +92,9 @@ public class PieceJointeService {
                 pieceJointe.getCheminFichier(),
                 pieceJointe.getTaille(),
                 pieceJointe.getTypeDocument(),
-                pieceJointe.getUploadedAt()
+                pieceJointe.getUploadedAt(),
+                pieceJointe.getReferenceDocument(),
+                pieceJointe.getObservation()
         );
     }
 }

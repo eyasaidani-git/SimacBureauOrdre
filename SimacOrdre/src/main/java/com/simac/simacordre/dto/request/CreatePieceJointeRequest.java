@@ -10,6 +10,8 @@ public class CreatePieceJointeRequest {
     private TypeFichierEnum typeFichier;
     private String cheminFichier;
     private Long taille;
+    private String referenceDocument;
+    private String observation;
     private TypeDocumentPieceJointeEnum typeDocument;
 
     public CreatePieceJointeRequest() {
@@ -62,4 +64,12 @@ public class CreatePieceJointeRequest {
     public void setTypeDocument(TypeDocumentPieceJointeEnum typeDocument) {
         this.typeDocument = typeDocument;
     }
+
+    public String getReferenceDocument() {return referenceDocument;}
+
+    public void setReferenceDocument(String referenceDocument) {this.referenceDocument = referenceDocument;}
+
+    public String getObservation() {return observation;}
+
+    public void setObservation(String observation) {this.observation = observation;}
 }

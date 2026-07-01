@@ -8,6 +8,7 @@ import com.simac.simacordre.entities.NumeroOrdreSeq;
 import com.simac.simacordre.entities.Utilisateur;
 import com.simac.simacordre.enums.PrioriteEnum;
 import com.simac.simacordre.enums.StatutCourrierEnum;
+import com.simac.simacordre.enums.TypeCourrierEnum;
 import com.simac.simacordre.repositories.CourrierRepository;
 import com.simac.simacordre.repositories.DepartementRepository;
 import com.simac.simacordre.repositories.UtilisateurRepository;
@@ -90,6 +91,19 @@ public class CourrierService {
         Courrier saved = courrierRepository.save(courrier);
 
         return toResponse(saved);
+    }
+    @Transactional
+    public void modifierDescriptionCourrier(Long id, String nouvelleDescription) {
+        if (nouvelleDescription == null || nouvelleDescription.isBlank()) {
+            throw new RuntimeException("La description est obligatoire.");
+        }
+
+        Courrier courrier = courrierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Courrier introuvable avec id : " + id));
+
+        courrier.setDescription(nouvelleDescription.trim());
+
+        courrierRepository.save(courrier);
     }
 
     private CourrierResponse toResponse(Courrier courrier) {
